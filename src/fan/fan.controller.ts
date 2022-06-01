@@ -1,18 +1,40 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Put, Sse } from '@nestjs/common';
 import { FanService } from './fan.service';
-import { FanState } from './fan.model';
+import { FanState, MessageEvent } from './fan.model';
+import { Observable, Subject } from 'rxjs';
+import { RedisService } from '../redis/redis.service';
 
-@Controller({ path: 'fan/pull/cord' })
+@Controller({ path: 'fan' })
 export class FanController {
-  constructor(private readonly fanService: FanService) {}
+  subject$: Subject<MessageEvent> = new Subject();
 
-  @Get('1')
-  pullCord1(): FanState {
-    return this.fanService.pullCord1();
+  constructor(
+    private readonly fanService: FanService,
+    private readonly redisService: RedisService,
+  ) {}
+
+  @Get('status')
+  async fanStatus(): Promise<FanState> {
+    return await this.fanService.getFanStatus();
   }
 
-  @Get('2')
-  pullCord2(): FanState {
-    return this.fanService.pullCord2();
+  @Put('cord/pull/1')
+  async pullCord1(): Promise<void> {
+    await this.fanService.onPullCord('1');
+  }
+
+  @Put('cord/pull/2')
+  async pullCord2(): Promise<void> {
+    await this.fanService.onPullCord('2');
+  }
+
+  @Sse('cord/pull/sse')
+  sendFanState(): Observable<MessageEvent> {
+    this.redisService.subscribeToEvents().pSubscribe('__key*__:hset', (_) => {
+      this.fanService.getFanStatus().then((fanState) => {
+        this.subject$.next({ data: fanState });
+      });
+    });
+    return this.subject$;
   }
 }

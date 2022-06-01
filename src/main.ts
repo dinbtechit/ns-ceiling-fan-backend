@@ -10,6 +10,7 @@ async function bootstrap() {
     type: VersioningType.URI,
     defaultVersion: ['1'],
   });
+  app.enableCors();
   app.useWebSocketAdapter(new WsAdapter(app) as any);
 
   await app.listen(3000);

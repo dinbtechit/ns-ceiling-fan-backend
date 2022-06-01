@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { FanController } from './fan/fan.controller';
 import { FanService } from './fan/fan.service';
-import { SocketModule } from './socket/socket.module';
+import { RedisService } from './redis/redis.service';
 
 @Module({
-  imports: [SocketModule],
+  imports: [],
   controllers: [FanController],
-  providers: [FanService],
+  providers: [FanService, RedisService],
 })
 export class AppModule {}
