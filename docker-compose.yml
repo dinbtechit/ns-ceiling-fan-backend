@@ -9,6 +9,16 @@ services:
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
       - my-redis-local:/data
+  backend:
+    build:
+      context: .
+      dockerfile: 'Dockerfile'
+    ports:
+      - '3000:3000'
+    environment:
+      REDIS_HOST: 'redis'
+    depends_on:
+      - redis
 volumes:
   my-redis-local:
     driver: local

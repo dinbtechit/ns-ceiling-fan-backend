@@ -2,9 +2,14 @@ import { Module } from '@nestjs/common';
 import { FanController } from './fan/fan.controller';
 import { FanService } from './fan/fan.service';
 import { RedisService } from './redis/redis.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.environment',
+    }),
+  ],
   controllers: [FanController],
   providers: [FanService, RedisService],
 })

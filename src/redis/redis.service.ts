@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { createClient, RedisClientType } from 'redis';
 import { FanState } from '../fan/fan.model';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RedisService implements OnModuleInit {
@@ -8,19 +9,22 @@ export class RedisService implements OnModuleInit {
   public publisherClient: RedisClientType;
   private subscriberClient: RedisClientType;
 
+  constructor(private configService: ConfigService) {}
+
   async onModuleInit() {
-    this.redisClient = await RedisService.newRedisClient();
-    this.subscriberClient = await RedisService.newRedisClient();
-    this.publisherClient = await RedisService.newRedisClient();
+    this.redisClient = await this.newRedisClient();
+    this.subscriberClient = await this.newRedisClient();
+    this.publisherClient = await this.newRedisClient();
 
     await this.redisClient.connect();
     await this.subscriberClient.connect();
     await this.publisherClient.connect();
   }
 
-  private static newRedisClient(): RedisClientType {
+  private newRedisClient(): RedisClientType {
+    const redisHost = this.configService.get<string>('REDIS_HOST');
     return createClient({
-      url: 'redis://localhost:6379',
+      url: `redis://${redisHost}:6379`,
     });
   }
 
