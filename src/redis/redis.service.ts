@@ -16,8 +16,6 @@ export class RedisService implements OnModuleInit {
     await this.redisClient.connect();
     await this.subscriberClient.connect();
     await this.publisherClient.connect();
-
-    await this.subscribeToEvents();
   }
 
   private static newRedisClient(): RedisClientType {

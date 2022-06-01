@@ -14,9 +14,9 @@ describe('FanController', () => {
     fanController = app.get<FanController>(FanController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(fanController.getHello()).toBe('Hello World!');
+  describe('Fan APIs', () => {
+    it('should return Fan status from redis"', () => {
+      expect(fanController.fanStatus()).toBe({ speed: 0, direction: true });
     });
   });
 });
