@@ -1,15 +1,21 @@
 version: '3.8'
 services:
   redis:
+    container_name: redis
     image: redis
     restart: always
     ports:
       - '6379:6379'
     command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      nsfan:
+        aliases:
+          - redis
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
       - my-redis-local:/data
   backend:
+    container_name: backend
     build:
       context: .
       dockerfile: 'Dockerfile'
@@ -17,8 +23,18 @@ services:
       - '3000:3000'
     environment:
       REDIS_HOST: 'redis'
+    networks:
+      nsfan:
+        aliases:
+          - backend
     depends_on:
       - redis
+
+networks:
+  nsfan:
+    external: true
+
 volumes:
   my-redis-local:
     driver: local
+
