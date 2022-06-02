@@ -34,7 +34,10 @@ export class RedisService implements OnModuleInit {
 
   public async getNsFanState(): Promise<FanState> {
     const { speed, direction } = await this.publisherClient.hGetAll('nsfan');
-    return { speed: Number(speed), direction: direction === 'true' };
+    return {
+      speed: isNaN(Number(speed)) ? 0 : Number(speed),
+      direction: direction === 'true',
+    };
   }
 
   public async setNsFanState({ speed, direction }: FanState): Promise<void> {
