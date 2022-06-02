@@ -3,8 +3,8 @@ FROM node:14-alpine As development
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-COPY .environment-prod ./environment
-RUN npm install --only=development
+
+RUN npm install
 
 COPY . .
 
