@@ -46,7 +46,7 @@ curl -X PUT "http://localhost:3000/api/v1/fan/cord/pull/1"
 curl -X PUT "http://localhost:3000/api/v1/fan/cord/pull/2"
 ```
 
-3.To Listen For SSE events.
+4. To Listen For SSE events.
 ```
 curl -X GET "http://localhost:3000/api/v1/fan/cord/pull/sse"
 ```
