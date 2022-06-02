@@ -3,6 +3,8 @@ import { createClient, RedisClientType } from 'redis';
 import { FanState } from '../fan/fan.model';
 import { ConfigService } from '@nestjs/config';
 
+export type EventCallBack = (events: any) => any;
+
 @Injectable()
 export class RedisService implements OnModuleInit {
   public redisClient: RedisClientType;
@@ -28,8 +30,8 @@ export class RedisService implements OnModuleInit {
     });
   }
 
-  public subscribeToEvents(): RedisClientType {
-    return this.subscriberClient;
+  public async subscribeToEvents(listener: EventCallBack): Promise<void> {
+    await this.subscriberClient.pSubscribe('__key*__:hset', listener);
   }
 
   public async getNsFanState(): Promise<FanState> {

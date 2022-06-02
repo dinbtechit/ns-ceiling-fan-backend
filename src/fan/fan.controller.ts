@@ -30,15 +30,13 @@ export class FanController {
 
   @Sse('cord/pull/sse')
   sendFanState(): Observable<MessageEvent> {
-    this.redisService
-      .subscribeToEvents()
-      .pSubscribe('__key*__:hset', (event) => {
-        if (event === 'nsfan') {
-          this.fanService.getFanStatus().then((fanState) => {
-            this.subject$.next({ data: fanState });
-          });
-        }
-      });
+    this.redisService.subscribeToEvents((event) => {
+      if (event === 'nsfan') {
+        this.fanService.getFanStatus().then((fanState) => {
+          this.subject$.next({ data: fanState });
+        });
+      }
+    });
     return this.subject$;
   }
 }
