@@ -30,7 +30,7 @@ $ npm run test
 
 1. Get Fan Status
 ```
-curl -X GET "http://localhost:3000/api/v1/fan/cord/pull/1"
+curl -X GET "http://localhost:3000/api/v1/fan/status"
 ```
 **output**
 ```
