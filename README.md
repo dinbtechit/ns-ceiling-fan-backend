@@ -4,7 +4,7 @@
 **Technologies**
 - NestJS (A progressive nodejs framework)
 - REST API
-- Server Sent Events for Event Driven Communication from client.
+- Server Sent Events for Event Driven Communication to client-side.
 - Redis for cache
 
 ## Installation
