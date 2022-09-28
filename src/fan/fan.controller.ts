@@ -1,17 +1,21 @@
-import { Controller, Get, Put, Sse } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  OnApplicationBootstrap,
+  Put,
+  Sse,
+} from '@nestjs/common';
 import { FanService } from './fan.service';
 import { FanState, MessageEvent } from './fan.model';
-import { Observable, Subject } from 'rxjs';
-import { RedisService } from '../redis/redis.service';
+import { Observable } from 'rxjs';
 
 @Controller({ path: 'fan' })
-export class FanController {
-  subject$: Subject<MessageEvent> = new Subject();
+export class FanController implements OnApplicationBootstrap {
+  constructor(private readonly fanService: FanService) {}
 
-  constructor(
-    private readonly fanService: FanService,
-    private readonly redisService: RedisService,
-  ) {}
+  async onApplicationBootstrap() {
+    await this.fanService.subscribeToFanStatus();
+  }
 
   @Get('status')
   async fanStatus(): Promise<FanState> {
@@ -30,13 +34,6 @@ export class FanController {
 
   @Sse('cord/pull/sse')
   sendFanState(): Observable<MessageEvent> {
-    this.redisService.subscribeToEvents((event) => {
-      if (event === 'nsfan') {
-        this.fanService.getFanStatus().then((fanState) => {
-          this.subject$.next({ data: fanState });
-        });
-      }
-    });
-    return this.subject$;
+    return this.fanService.fanStatus$;
   }
 }

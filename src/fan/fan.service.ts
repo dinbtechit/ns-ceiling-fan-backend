@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { FanState } from './fan.model';
+import { FanState, MessageEvent } from './fan.model';
 import { RedisService } from '../redis/redis.service';
+import { Subject } from 'rxjs';
 
 let fanState: FanState = {
   speed: 0,
@@ -11,6 +12,8 @@ export type Cord = '1' | '2';
 
 @Injectable()
 export class FanService {
+  public fanStatus$: Subject<MessageEvent> = new Subject();
+
   constructor(private redisService: RedisService) {}
 
   async getFanStatus(): Promise<FanState> {
@@ -35,5 +38,14 @@ export class FanService {
 
   private static async onPullCord2(): Promise<void> {
     fanState.direction = !fanState.direction;
+  }
+
+  async subscribeToFanStatus() {
+    await this.redisService.subscribeToEvents(async (event) => {
+      if (event === 'nsfan') {
+        const fanState = await this.getFanStatus();
+        this.fanStatus$.next({ data: fanState });
+      }
+    });
   }
 }

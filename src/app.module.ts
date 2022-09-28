@@ -11,6 +11,6 @@ import { ConfigModule } from '@nestjs/config';
     }),
   ],
   controllers: [FanController],
-  providers: [FanService, RedisService],
+  providers: [RedisService, FanService],
 })
 export class AppModule {}
